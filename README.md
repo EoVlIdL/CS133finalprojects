@@ -1,1 +1,2 @@
-# CS133finalprojects
+# CS133 Project: Neural network implementation
+
