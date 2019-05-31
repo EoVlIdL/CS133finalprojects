@@ -8,20 +8,20 @@
 using namespace Eigen;
 using namespace std;
 
-MatrixXd ReLU(MatrixXd &input){
+void ReLU(MatrixXd &input){
 	int row = input.rows();
 	int col = input.cols();
-	std::cout << "row = " << row << "  col = " << col<< "\n";
+	// std::cout << "row = " << row << "  col = " << col<< "\n";
 	for (int i = 0; i < row; i ++){
-		std::cout << "i = " << i << "\n";
+		// std::cout << "i = " << i << "\n";
 		for (int j = 0; j < col; j ++){
 			if (input(i,j) < 0)
 				input(i,j) = 0;
 		}
 		// std::cout << "input = \n" << input << "\n";
 	}
-	std::cout << "ReLU finished(inside)\n";
-	std::cout << input << "\n";
+	// std::cout << "ReLU finished(inside)\n";
+	// std::cout << input << "\n";
 
 }
 
@@ -205,6 +205,8 @@ void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
 	// 	cout<<"begin"<<endl;
 	// 	cout<<b_conv1[i]<<endl;
 	// }
+	// std::cout << "w_conv1[0] = \n" << w_conv1[0] << "\n";
+	// std::cout << "b_conv1[0] = " << b_conv1[0] << "\n";
 }
 void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<double> &b_conv2){
 	fstream bcon2("b_con2.txt");
@@ -284,6 +286,8 @@ void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<double> &b_
     // }
 	wcon2.close();
 	//cout<<"crash in conv2"<<endl;
+	// std::cout << "w_conv2[0][0] = \n" << w_conv2[0][0] << "\n";
+	// std::cout << "b_conv2[0] = " << b_conv2[0] << "\n";
 }
 void input_parameter_fc1(MatrixXd & w_fc1, VectorXd & b_fc1){
 	fstream wfc1("w_fc1.txt");
@@ -291,7 +295,7 @@ void input_parameter_fc1(MatrixXd & w_fc1, VectorXd & b_fc1){
 		cout<<"Error opening file w_fc1.txt"<<endl;
 		exit(1);
 	}
-	cout<<"goes wfc1"<<endl;
+	// cout<<"goes wfc1"<<endl;
 	int row_count = 0;
     int col_count = 0;
     int row = w_fc1.rows(); 
@@ -308,10 +312,10 @@ void input_parameter_fc1(MatrixXd & w_fc1, VectorXd & b_fc1){
     	}
     	for(int i = 0; i<4; i++){
     		w_fc1(row_count,col_count) = m[i];
-    			col_count ++;
-    			if (col_count == col){
-	    			col_count = 0;
-	    			row_count += 1;
+    			row_count ++;
+    			if (row_count == row){
+	    			row_count = 0;
+	    			col_count += 1;
 	    		}
     	}	
     }
@@ -345,7 +349,7 @@ void input_parameter_fc2(MatrixXd & w_fc2, VectorXd & b_fc2){
 		cout<<"Error opening file w_fc2.txt"<<endl;
 		exit(1);
 	}
-	//cout<<"goes wfc2"<<endl;
+	// cout<<"goes wfc2"<<endl;
 	int row_count = 0;
     int col_count = 0;
     int row = w_fc2.rows(); 
@@ -360,12 +364,16 @@ void input_parameter_fc2(MatrixXd & w_fc2, VectorXd & b_fc2){
     		//matrix.push_back(stod(tmp));
     		m.push_back(stod(tmp));
     	}
+    	// cout<<"inner loop ends"<<endl;
+    	// cout<<m.size()<<endl;
+    	// cout<<"row_count "<<row_count<<endl;
     	for(int i = 0; i<m.size(); i++){
-    		w_fc2(row_count,i) = m[i];	
+    		w_fc2(i,col_count) = m[i];		
     	}
-    	row_count++;
+    	// cout<<"col_count "<<col_count<<endl;
+    	col_count++;
     }
-    //cout<<w_fc1<<endl;
+    // cout<<w_fc2<<endl;
     wfc2.close();
     fstream bfc2("b_fc2.txt");
 	if(!bfc2.is_open()){
@@ -407,6 +415,31 @@ int main(int argc, char const *argv[])
 	// get the init picture
 	MatrixXd init_picture(init_size,init_size);
 
+	MatrixXd picture(14,4); 
+	picture <<  0.6, 0.8 , 0  , 0,
+			    0.7, 1.0 , 0  , 0,
+			    0.7, 1.0 , 0  , 0,
+				0.7, 1.0 , 0  , 0,
+				0.7, 1.0 , 0  , 0,
+			    0.5, 1.0 , 0.4, 0,
+			      0, 1.0 , 0.4, 0,
+			      0, 1.0 , 0.4, 0,
+				  0, 1.0 , 0.7, 0,
+				  0, 1.0 , 0.7, 0,
+				  0, 1.0 , 0.7, 0,
+				  0, 1.0 , 1.0, 0,
+				  0, 0.9 , 0.7, 0.1,
+				  0, 0.3 , 0.7, 0.1;
+	for (int i = 0; i < 14; i++){
+		for (int j = 0; j < 4; j++){
+			init_picture(i + 5, j + 8) = picture(i,j);
+		}
+	}
+
+	std::cout << "init_picture = \n" << init_picture << "\n";
+
+
+
 	//first convulution layer and pool layer
 	vector<MatrixXd> w_conv1(neural_amount1);
 	for (int i = 0; i < neural_amount1; i++){
@@ -431,6 +464,11 @@ int main(int argc, char const *argv[])
 		picture_after_p1[i] = poolLayer(picture_after_c1[i],2,"MAX");
 	}
 
+std::cout << "picture_after_p1\n";
+for (int i = 0; i < neural_amount1; i ++){
+	std::cout << picture_after_p1[i] << "\n\n";
+}
+
 	//second convulution layer and pool layer
 	
 	vector<vector<MatrixXd>> w_conv2(neural_amount1);
@@ -448,34 +486,44 @@ int main(int argc, char const *argv[])
 		picture_after_c2[i].resize(size2,size2);
 		picture_after_p2[i].resize(size3,size3);
 	}
-	cout << "here\n";
+	// cout << "here\n";
 	input_parameter_conv2(w_conv2,b_conv2); //load the parameters from trianed model
-	cout << "here\n";
+	// cout << "here\n";
 	for (int j = 0; j < neural_amount2; j ++){
-		cout << "j = " << j <<"\n";
+		// cout << "j = " << j <<"\n";
 		for (int i = 0; i < neural_amount1; i ++){
 			picture_after_c2[j] += convLayer(picture_after_p1[i], w_conv2[i][j]);
 		}
-		cout << "here\n";
+		// cout << "here\n";
 		bias(picture_after_c2[j], b_conv2[j]);
-		cout << "after bias\n";
-		std::cout << "matrix = \n" << picture_after_c2[j] <<"\n";
-		std::cout <<"before Relu\n";
+		// cout << "after bias\n";
+		// std::cout << "matrix = \n" << picture_after_c2[j] <<"\n";
+		// std::cout <<"before Relu\n";
 		ReLU(picture_after_c2[j]);
-		cout << "after Relu(outside)\n";
+		// cout << "after Relu(outside)\n";
 		picture_after_p2[j] = poolLayer(picture_after_c2[j], 2, "MAX");
 	}
-	cout << "here\n";
+	// cout << "here\n";
 	
 	//reshape the 64 7*7 matrix to a (64*7*7) * 1 matrix  
 	VectorXd reshaped_picture(neural_amount2 * size3 * size3);
 	VectorXd picture_after_link(neural_amount3);
 	MatrixXd w_fc1(neural_amount3, neural_amount2 * size3 * size3);
 	VectorXd b_fc1(neural_amount3);
-	cout << "here\n";
+	
+	int count = 0;
+	for (int index = 0; index < neural_amount1; index ++){
+		for (int i = 0; i < size3; i++){
+			for (int j = 0; j < size3 ; j++){
+				reshaped_picture(count) = picture_after_p2[index](i,j);
+				count ++;
+			}
+		}
+	}
+
+
 	input_parameter_fc1(w_fc1, b_fc1);  
 	//load the parameters from trianed model
-	cout<<"crash in main"<<endl;
 	picture_after_link = w_fc1 * reshaped_picture + b_fc1;
 
 	
@@ -487,6 +535,10 @@ int main(int argc, char const *argv[])
 
 	int index;
 	double temp = result.maxCoeff(&index);
+	double sum = result.sum();
+	for (int i = 0; i < result.size(); i++){
+		result(i) = result(i) / sum;
+	}
 
 	std::cout << "The result is \n" << result << "\n";
 	std::cout << "Thus the guess number is " << index << "\n";	
