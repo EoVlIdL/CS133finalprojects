@@ -41,7 +41,7 @@ Final get output:
 
 Performance
 -------------------
-![](../1.png)
+![](/1.png)
 
 Meta
 -------------------
