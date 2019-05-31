@@ -24,7 +24,7 @@ From Mnist Data get corresponding data "t10k-images-idx3-ubyte" and "train-image
 Then compute the input matrix with first conv_layer and pool_layer get two vectors vector<MatrixXd> picture_after_c1 and  vector<MatrixXd> picture_after_p1.
 After get first conv and pool, load parameters from train model and do the same operation once more. 
 Return vector<MatrixXd> picture_after_c2 and vector<MatrixXd> picture_after_p2. Then reshape the 64 7*7 matrix to a (64*7*7) * 1 matrix and delivered to softmax regression output layer.
-	Final get output:
+Final get output:
 -------------------
 	1. The result is \n" << result 
 	2. Thus the guess number is " << index 	
