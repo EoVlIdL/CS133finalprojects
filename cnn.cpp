@@ -39,7 +39,7 @@ conv(MatrixXd input, MatrixXd kernel){
 
 //default step is 1; default mode is SAME
 MatrixXd 
-convLayer(MatrixXd x, MatrixXd kernel, double b_conv){
+convLayer(MatrixXd x, MatrixXd kernel){
 	int extend_size = kernel.rows() - 1;
 	int row = x.rows();
 	int col = x.cols();
@@ -54,7 +54,7 @@ convLayer(MatrixXd x, MatrixXd kernel, double b_conv){
 
 	for (int i = 0; i < row; i ++ ){
 		for (int j = 0; j < col ; j ++ ){
-			result(i,j) = conv(input.block(i,j,kernel.rows(),kernel.rows()),kernel) + b_conv;
+			result(i,j) = conv(input.block(i,j,kernel.rows(),kernel.rows()),kernel);
 		}
 	}
 	return result;		
@@ -103,6 +103,17 @@ poolLayer(MatrixXd input, int k, string padding){
 	return result;
 }
 
+
+void bias(MatrixXd & x , double b){
+	int row = x.rows();
+	int col = x.cols();
+	for (int i = 0; i < row; i ++){
+		for (int j = 0; j < col ; j ++){
+			x(i,j) += b;
+		}
+	}
+}
+
 // int main(int argc, char const *argv[])
 // {
 // 	MatrixXd input(2,2);
@@ -122,7 +133,7 @@ poolLayer(MatrixXd input, int k, string padding){
 // 	return 0;
 // }
 void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
-	fstream wcon1("w_con1.txt");
+	fstream wcon1("../src/w_con1.txt");
 	if(!wcon1.is_open()){
 		cout<<"Error opening file w_conv1.txt"<<endl;
 		exit(1);
@@ -166,7 +177,7 @@ void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
 	// 	getline(wcon1,buffer);
 	// }
 }
-void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<vector<double>> &b_conv2){
+void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<double> &b_conv2){
 
 }
 void input_parameter_fc1(MatrixXd & w_fc1, VectorXd & b_fc1){
@@ -204,18 +215,17 @@ int main(int argc, char const *argv[])
 
 	
 	vector<MatrixXd> picture_after_c1(neural_amount1);
+	vector<MatrixXd> picture_after_p1(neural_amount1);
 	for (int i = 0; i < neural_amount1; i++){
 		picture_after_c1[i].resize(init_size,init_size);
-	}
-	vector<MatrixXd> picture_after_p1(32);
-	for (int i = 0; i < neural_amount1; i++){
 		picture_after_p1[i].resize(size2,size2);
 	}
 
 	input_parameter_conv1(w_conv1,b_conv1);  //load the parameters from trianed model
 	cout<<"crash in main"<<endl;
 	for (int i = 0; i < neural_amount1; i++){
-		picture_after_c1[i] = convLayer(init_picture,w_conv1[i],b_conv1[i]);
+		picture_after_c1[i] = convLayer(init_picture,w_conv1[i]);
+		bias(picture_after_c1[i], b_conv1[i]);
 		ReLU(picture_after_c1[i]);
 		picture_after_p1[i] = poolLayer(picture_after_c1[i],2,"MAX");
 	}
@@ -223,32 +233,28 @@ int main(int argc, char const *argv[])
 	//second convulution layer and pool layer
 	
 	vector<vector<MatrixXd>> w_conv2(neural_amount1);
-	vector<vector<double>> b_conv2(neural_amount1);
+	vector<double> b_conv2(neural_amount2);
 	for (int i = 0; i < neural_amount1; i ++){
 		w_conv2[i].resize(neural_amount2);
-		b_conv2[i].resize(neural_amount2);
 		for (int j = 0; j < neural_amount2; j++){
 			w_conv2[i][j].resize(kernel_size,kernel_size);
 		}
 	}
 	
-	
 	vector<MatrixXd> picture_after_c2(neural_amount2);
-	for (int i = 0; i < neural_amount2; i++){
-		picture_after_c2[i].resize(size2,size2);
-	}
 	vector<MatrixXd> picture_after_p2(neural_amount2);
 	for (int i = 0; i < neural_amount2; i++){
+		picture_after_c2[i].resize(size2,size2);
 		picture_after_p2[i].resize(size3,size3);
 	}
 
-	
 	input_parameter_conv2(w_conv2,b_conv2); //load the parameters from trianed model
 
 	for (int j = 0; j < neural_amount2; j ++){
 		for (int i = 0; i < neural_amount1; i ++){
-			picture_after_c2[j] += convLayer(picture_after_p1[i], w_conv2[i][j] ,b_conv2[i][j]);
+			picture_after_c2[j] += convLayer(picture_after_p1[i], w_conv2[i][j]);
 		}
+		bias(picture_after_c2[j], b_conv2[j]);
 		ReLU(picture_after_c2[j]);
 		picture_after_p2[j] = poolLayer(picture_after_c2[j], 2, "MAX");
 	}
