@@ -3,7 +3,8 @@
 #include <Eigen/Eigen>
 #include <string>
 #include <vector>
-
+#include <fstream>
+#include <sstream>
 using namespace Eigen;
 using namespace std;
 
@@ -121,7 +122,49 @@ poolLayer(MatrixXd input, int k, string padding){
 // 	return 0;
 // }
 void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
+	fstream wcon1("w_con1.txt");
+	if(!wcon1.is_open()){
+		cout<<"Error opening file w_conv1.txt"<<endl;
+		exit(1);
+	}
+	string line;
+    int row_count = 0;
+    int col_count = 0;
+    int row = w_conv1[0].rows();
+    //cout<<row<<"********"<<endl;
+    int col = w_conv1[0].cols();
+    while (getline(wcon1,line)){
+    	stringstream input(line);
+    	vector<double> matrix;
+    	string tmp;
+    	while(input>>tmp){
+    		matrix.push_back(stod(tmp));
+    	}
+    	for(int i = 0; i<8; i++ ){	
+    	cout<<"innerloop"<<matrix[i]<<endl;
+    	} 	
+    	for(int i = 0; i < 8; i++){
+    		w_conv1[i](row_count,col_count) = matrix[i];
+		}
+		row_count ++;
+    	if (row_count == row){
+	    	row_count = 0;
+	    	col_count += 1;
+	    }   
+	    cout<<"loop "<<row_count<<endl; 	
+    }
+    for(int i = 0; i<w_conv1.size(); i++){
+    	cout<<"out loop\n "<<w_conv1[i]<<endl; 
+    }
+    
+    // for(int i = 0; i<8; i++ ){
+    // 	cout<<w_conv1[i]<<endl;
+    // }
 
+	// string buffer;
+	// while(!wcon1.eof()){
+	// 	getline(wcon1,buffer);
+	// }
 }
 void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<vector<double>> &b_conv2){
 
@@ -142,11 +185,11 @@ int main(int argc, char const *argv[])
 	int size2 = init_size / 2;
 	int size3 = size2 / 2;
 
-	int neural_amount1 = 32;
-	int neural_amount2 = 64;
-	int neural_amount3 = 1024;
+	int neural_amount1 = 8;
+	int neural_amount2 = 16;
+	int neural_amount3 = 256;
 
-	int kernel_size = 5;
+	int kernel_size = 3;
 
 
 	// get the init picture
@@ -170,7 +213,7 @@ int main(int argc, char const *argv[])
 	}
 
 	input_parameter_conv1(w_conv1,b_conv1);  //load the parameters from trianed model
-	
+	cout<<"crash in main"<<endl;
 	for (int i = 0; i < neural_amount1; i++){
 		picture_after_c1[i] = convLayer(init_picture,w_conv1[i],b_conv1[i]);
 		ReLU(picture_after_c1[i]);
@@ -234,4 +277,3 @@ int main(int argc, char const *argv[])
 	std::cout << "Thus the guess number is " << index << "\n";	
 	return 0;
 }
-
