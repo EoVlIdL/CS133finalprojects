@@ -6,7 +6,7 @@ Multi-layer networks include the following types of layers:
 
 Compile the project
 -------------------
-    g++ -std=c+=11 cnn.cpp
+    g++ -std=c+=11 cnn.cpp -o cnn
 
 File Location
 -------------------
@@ -17,6 +17,7 @@ File Location
 
 Usage Example
 -------------------
+	./cnn
 
 Implementation Order
 -----
@@ -37,15 +38,16 @@ Final get output:
 	2. Thus the guess number is " << index 	
 ```
  
-Train and Test
--------------------
 
 Performance
 -------------------
+![](../1.png)
 
 Meta
 -------------------
 34038083
+92199704
+62336123
 
 Contributing
 -------------------
