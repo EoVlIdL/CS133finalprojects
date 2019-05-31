@@ -133,7 +133,7 @@ void bias(MatrixXd & x , double b){
 // 	return 0;
 // }
 void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
-	fstream wcon1("../src/w_con1.txt");
+	fstream wcon1("w_con1.txt");
 	if(!wcon1.is_open()){
 		cout<<"Error opening file w_conv1.txt"<<endl;
 		exit(1);
@@ -151,41 +151,236 @@ void input_parameter_conv1(vector<MatrixXd> &w_conv1, vector<double> &b_conv1){
     	while(input>>tmp){
     		matrix.push_back(stod(tmp));
     	}
-    	for(int i = 0; i<8; i++ ){	
-    	cout<<"innerloop"<<matrix[i]<<endl;
-    	} 	
+    	//for(int i = 0; i<8; i++ ){	
+    	//cout<<"innerloop"<<matrix[i]<<endl;
+    	//} 	
     	for(int i = 0; i < 8; i++){
     		w_conv1[i](row_count,col_count) = matrix[i];
 		}
-		row_count ++;
-    	if (row_count == row){
-	    	row_count = 0;
-	    	col_count += 1;
+		col_count ++;
+    	if (col_count == col){
+	    	col_count = 0;
+	    	row_count += 1;
 	    }   
-	    cout<<"loop "<<row_count<<endl; 	
+	    //cout<<"loop "<<row_count<<endl; 	
     }
-    for(int i = 0; i<w_conv1.size(); i++){
-    	cout<<"out loop\n "<<w_conv1[i]<<endl; 
-    }
+    // for(int i = 0; i<w_conv1.size(); i++){
+    // 	cout<<"out loop\n "<<w_conv1[i]<<endl; 
+    // }
     
     // for(int i = 0; i<8; i++ ){
-    // 	cout<<w_conv1[i]<<endl;
+    // 	cout<<w_conv1[i]<<"/*****//"<<endl;
     // }
 
 	// string buffer;
 	// while(!wcon1.eof()){
 	// 	getline(wcon1,buffer);
 	// }
+	wcon1.close();
+	fstream bcon1("b_con1.txt");
+	if(!bcon1.is_open()){
+		cout<<"Error opening file w_conv1.txt"<<endl;
+		exit(1);
+	}
+	string bias;
+	while (getline(bcon1,bias)){
+    	stringstream input(bias);
+    	string tmp;
+    	vector<double> pre;
+    	while(input>>tmp){
+    		pre.push_back(stod(tmp));
+    	}
+    	for(int i =0;i<b_conv1.size();i++){
+    		b_conv1[i] = pre[i];
+    	}
+	}
+	bcon1.close();
+	// for(int i =0;i<b_conv1.size();i++){
+	// 	cout<<"begin"<<endl;
+	// 	cout<<b_conv1[i]<<endl;
+	// }
 }
 void input_parameter_conv2(vector<vector<MatrixXd>> &w_conv2, vector<double> &b_conv2){
+	fstream bcon2("b_con2.txt");
+	if(!bcon2.is_open()){
+		cout<<"Error opening file w_conv1.txt"<<endl;
+		exit(1);
+	}
+	string bias;
+	while (getline(bcon2,bias)){
+    	stringstream input(bias);
+    	string tmp;
+    	vector<double> pre;
+    	while(input>>tmp){
+    		pre.push_back(stod(tmp));
+    	}
+    	for(int i =0;i<b_conv2.size();i++){
+    		b_conv2[i] = pre[i];
+    	}
+	}
+	bcon2.close();
+	// for(int i =0;i<b_conv2.size();i++){
+ //    		cout<<b_conv2[i]<<endl;
+ //    	}
+	fstream wcon2("w_con2.txt");
+	if(!wcon2.is_open()){
+		cout<<"Error opening file w_conv1.txt"<<endl;
+		exit(1);
+	}
+	string line;
+	int matrix_count = 0;
+    int row_count = 0;
+    int col_count = 0;
+    int row = w_conv2[0][0].rows(); 
+    int col = w_conv2[0][0].cols();
+    int loop_count = 0;
+    while (getline(wcon2,line)){
+    	//cout<<"enter loop "<<loop_count<<endl;
+    	stringstream input(line);
+    	vector<double> matrix;
+    	string tmp;
+    	while(input>>tmp){
+    		matrix.push_back(stod(tmp));
+    	}
+    	
+  //   	for(int i = 0; i < 8; i++){
+  //   		for(int j = 0; j < 16; j++){
+  //   			w_conv2[i][j](row_count,col_count) = matrix[j];
+  //   		}
+		// }
+		if(matrix_count == 8){
+			matrix_count = 0;
+			col_count += 1;
+			if (col_count == col){
+	    		col_count = 0;
+	    		row_count += 1;
+	    		//if(row_count == row){
 
+	    		//}
+	    	}   	
+		}
+		for(int i = 0; i < 16; i++){
+    		// cout<<"enter inner loop"<<endl;
+    		// cout<<matrix_count<<"***"<<col_count<<"***"<<row_count<<endl;
+    		// cout<<"row"<<row<<endl;
+    		w_conv2[matrix_count][i](row_count,col_count) = matrix[i];
+    	}
+    	
+    	matrix_count++;
+    	loop_count++;
+    	//cout<<"********\n"<<w_conv2[7][15]<<"*********"<<endl;
+    }
+   // cout<<"exit loop"<<endl;
+    // for(int i = 0; i < 8 ; i++){
+    // 	for(int j = 0; j < 16; j++){
+    // 		cout<<w_conv2[i][j]<<"********"<<endl;
+    // 	}
+    // }
+	wcon2.close();
+	//cout<<"crash in conv2"<<endl;
 }
 void input_parameter_fc1(MatrixXd & w_fc1, VectorXd & b_fc1){
-
+	fstream wfc1("w_fc1.txt");
+	if(!wfc1.is_open()){
+		cout<<"Error opening file w_fc1.txt"<<endl;
+		exit(1);
+	}
+	cout<<"goes wfc1"<<endl;
+	int row_count = 0;
+    int col_count = 0;
+    int row = w_fc1.rows(); 
+    int col = w_fc1.cols();
+    string line;
+	while (getline(wfc1,line)){
+    	//cout<<"enter loop "<<loop_count<<endl;
+    	stringstream input(line);
+    	string tmp;
+    	vector<double> m;
+    	while(input>>tmp){
+    		//matrix.push_back(stod(tmp));
+    		m.push_back(stod(tmp));
+    	}
+    	for(int i = 0; i<4; i++){
+    		w_fc1(row_count,col_count) = m[i];
+    			col_count ++;
+    			if (col_count == col){
+	    			col_count = 0;
+	    			row_count += 1;
+	    		}
+    	}	
+    }
+    //cout<<w_fc1<<endl;
+    wfc1.close();
+    fstream bfc1("b_fc1.txt");
+	if(!bfc1.is_open()){
+		cout<<"Error opening file b_fc1.txt"<<endl;
+		exit(1);
+	}
+	string bias;
+	while (getline(bfc1,bias)){
+    	//cout<<"enter loop "<<loop_count<<endl;
+    	stringstream input(bias);
+    	string tmp;
+    	vector<double> m;
+    	while(input>>tmp){
+    		//matrix.push_back(stod(tmp));
+    		m.push_back(stod(tmp));
+    	}
+    	for(int i = 0; i < b_fc1.size(); i++){
+    		b_fc1[i] = m[i];
+    	}
+    }
+    bfc1.close();
 }
 
 void input_parameter_fc2(MatrixXd & w_fc2, VectorXd & b_fc2){
-
+	fstream wfc2("w_fc2.txt");
+	if(!wfc2.is_open()){
+		cout<<"Error opening file w_fc2.txt"<<endl;
+		exit(1);
+	}
+	//cout<<"goes wfc2"<<endl;
+	int row_count = 0;
+    int col_count = 0;
+    int row = w_fc2.rows(); 
+    int col = w_fc2.cols();
+    string line;
+	while (getline(wfc2,line)){
+    	//cout<<"enter loop "<<loop_count<<endl;
+    	stringstream input(line);
+    	string tmp;
+    	vector<double> m;
+    	while(input>>tmp){
+    		//matrix.push_back(stod(tmp));
+    		m.push_back(stod(tmp));
+    	}
+    	for(int i = 0; i<m.size(); i++){
+    		w_fc2(row_count,i) = m[i];	
+    	}
+    	row_count++;
+    }
+    //cout<<w_fc1<<endl;
+    wfc2.close();
+    fstream bfc2("b_fc2.txt");
+	if(!bfc2.is_open()){
+		cout<<"Error opening file b_fc2.txt"<<endl;
+		exit(1);
+	}
+	string bias;
+	while (getline(bfc2,bias)){
+    	//cout<<"enter loop "<<loop_count<<endl;
+    	stringstream input(bias);
+    	string tmp;
+    	vector<double> m;
+    	while(input>>tmp){
+    		//matrix.push_back(stod(tmp));
+    		m.push_back(stod(tmp));
+    	}
+    	for(int i = 0; i < b_fc2.size(); i++){
+    		b_fc2[i] = m[i];
+    	}
+    }
+    bfc2.close();
 }
 
 
@@ -222,7 +417,7 @@ int main(int argc, char const *argv[])
 	}
 
 	input_parameter_conv1(w_conv1,b_conv1);  //load the parameters from trianed model
-	cout<<"crash in main"<<endl;
+	
 	for (int i = 0; i < neural_amount1; i++){
 		picture_after_c1[i] = convLayer(init_picture,w_conv1[i]);
 		bias(picture_after_c1[i], b_conv1[i]);
@@ -249,7 +444,7 @@ int main(int argc, char const *argv[])
 	}
 
 	input_parameter_conv2(w_conv2,b_conv2); //load the parameters from trianed model
-
+	
 	for (int j = 0; j < neural_amount2; j ++){
 		for (int i = 0; i < neural_amount1; i ++){
 			picture_after_c2[j] += convLayer(picture_after_p1[i], w_conv2[i][j]);
@@ -266,7 +461,9 @@ int main(int argc, char const *argv[])
 	MatrixXd w_fc1(neural_amount3, neural_amount2 * size3 * size3);
 	VectorXd b_fc1(neural_amount3);
 
-	input_parameter_fc1(w_fc1, b_fc1);  //load the parameters from trianed model
+	input_parameter_fc1(w_fc1, b_fc1);  
+	//load the parameters from trianed model
+	cout<<"crash in main"<<endl;
 	picture_after_link = w_fc1 * reshaped_picture + b_fc1;
 
 	
