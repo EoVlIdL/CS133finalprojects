@@ -11,12 +11,18 @@ using namespace std;
 MatrixXd ReLU(MatrixXd &input){
 	int row = input.rows();
 	int col = input.cols();
+	std::cout << "row = " << row << "  col = " << col<< "\n";
 	for (int i = 0; i < row; i ++){
+		std::cout << "i = " << i << "\n";
 		for (int j = 0; j < col; j ++){
 			if (input(i,j) < 0)
 				input(i,j) = 0;
 		}
+		// std::cout << "input = \n" << input << "\n";
 	}
+	std::cout << "ReLU finished(inside)\n";
+	std::cout << input << "\n";
+
 }
 
 double
@@ -442,25 +448,31 @@ int main(int argc, char const *argv[])
 		picture_after_c2[i].resize(size2,size2);
 		picture_after_p2[i].resize(size3,size3);
 	}
-
+	cout << "here\n";
 	input_parameter_conv2(w_conv2,b_conv2); //load the parameters from trianed model
-	
+	cout << "here\n";
 	for (int j = 0; j < neural_amount2; j ++){
+		cout << "j = " << j <<"\n";
 		for (int i = 0; i < neural_amount1; i ++){
 			picture_after_c2[j] += convLayer(picture_after_p1[i], w_conv2[i][j]);
 		}
+		cout << "here\n";
 		bias(picture_after_c2[j], b_conv2[j]);
+		cout << "after bias\n";
+		std::cout << "matrix = \n" << picture_after_c2[j] <<"\n";
+		std::cout <<"before Relu\n";
 		ReLU(picture_after_c2[j]);
+		cout << "after Relu(outside)\n";
 		picture_after_p2[j] = poolLayer(picture_after_c2[j], 2, "MAX");
 	}
-
+	cout << "here\n";
 	
 	//reshape the 64 7*7 matrix to a (64*7*7) * 1 matrix  
 	VectorXd reshaped_picture(neural_amount2 * size3 * size3);
 	VectorXd picture_after_link(neural_amount3);
 	MatrixXd w_fc1(neural_amount3, neural_amount2 * size3 * size3);
 	VectorXd b_fc1(neural_amount3);
-
+	cout << "here\n";
 	input_parameter_fc1(w_fc1, b_fc1);  
 	//load the parameters from trianed model
 	cout<<"crash in main"<<endl;
